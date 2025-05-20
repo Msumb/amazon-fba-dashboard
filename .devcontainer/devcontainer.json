@@ -1,7 +1,0 @@
-{
-  "name": "Amazon FBA Dashboard",
-  "build": { "dockerfile": "Dockerfile" },
-  "forwardPorts": [5000, 5173],
-  "settings": { "terminal.integrated.shell.linux": "/bin/bash" },
-  "postCreateCommand": "echo 'Ready!'"
-}
