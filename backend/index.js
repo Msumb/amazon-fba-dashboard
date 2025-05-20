@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Scrape Amazon search results (basic, for demo)
+// Scrape Amazon search results (simplified demo, not for production scraping)
 async function scrapeAmazon(keyword) {
   const url = `https://www.amazon.com/s?k=${encodeURIComponent(keyword)}`;
   const { data } = await axios.get(url, {
@@ -21,7 +21,7 @@ async function scrapeAmazon(keyword) {
     const price = $(el).find('.a-price .a-offscreen').first().text().replace('$', '') || '0';
     const reviews = $(el).find('.a-size-base').first().text().replace(',', '') || '0';
     const rating = $(el).find('.a-icon-alt').first().text().split(' ')[0] || '0';
-    // BSR, mock for now
+    // BSR and history are mock/demo data
     if (asin && title) products.push({
       asin,
       title,
@@ -43,12 +43,12 @@ app.get('/api/search', async (req, res) => {
   const { keyword } = req.query;
   if (!keyword) return res.json([]);
   const products = await scrapeAmazon(keyword);
-  // Winner: price>20, bsr<20000, reviews<150, rating>=4
+  // Winner highlight logic (price>20, bsr<20000, reviews<150, rating>=4)
   products.forEach(p => p.winner = (p.price > 20 && p.bsr < 20000 && p.reviews < 150 && p.rating >= 4));
   res.json(products);
 });
 
-// Profit calc endpoint
+// Profit calculator endpoint
 app.post('/api/profit-calc', (req, res) => {
   const { price, cost, shipping, fbaFee } = req.body;
   const profit = price - cost - shipping - fbaFee;
